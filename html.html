@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BCN OiSeSaleTRIUNFAU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #333;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .controls label {
+      display: flex;
+      flex-direction: column;
+      font-weight: bold;
+    }
+    .controls input,
+    .controls select {
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+      min-width: 120px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      max-width: 600px;
+      margin: 0 auto 2rem auto;
+      text-align: center;
+      transition: all 0.3s ease-in-out;
+    }
+    .card:hover {
+      transform: scale(1.03);
+    }
+    .activity-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #e85a4f;
+    }
+    .info {
+      margin: 1rem 0;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    button {
+      background: #e85a4f;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background 0.3s ease-in-out;
+    }
+    button:hover {
+      background: #d24a3f;
+    }
+
+    /* Form modal styles */
+    #formModal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    #formContent {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      position: relative;
+    }
+    #formContent h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: #e85a4f;
+    }
+    #formContent label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: bold;
+    }
+    #formContent input,
+    #formContent select,
+    #formContent textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+      font-family: inherit;
+    }
+    #formContent textarea {
+      resize: vertical;
+    }
+    #formContent .btnGroup {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    #closeForm {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #999;
+      transition: color 0.2s;
+    }
+    #closeForm:hover {
+      color: #e85a4f;
+    }
+  </style>
+</head>
+<body>
+  <h1>BCN OiSeSaleTRIUNFAU 😈</h1>
+
+  <div class="controls">
+    <label>
+      Presupuesto (€)
+      <select id="presupuesto">
+        <option value="low">Bajo</option>
+        <option value="medium" selected>Medio</option>
+        <option value="high">Alto</option>
+      </select>
+    </label>
+    <label>
+      ¿Cuántos sois?
+      <input type="number" id="grupo" min="1" value="2" />
+    </label>
+    <label>
+      Estación del año
+      <select id="estacion">
+        <option value="verano">Verano</option>
+        <option value="invierno">Invierno</option>
+        <option value="otoño">Otoño</option>
+        <option value="primavera">Primavera</option>
+      </select>
+    </label>
+    <label>
+      ¿Hace calor?
+      <select id="clima">
+        <option value="calor">Sí</option>
+        <option value="frio">No, hace frío</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="card" id="actividadCard">
+    <div class="activity-title" id="tituloActividad">¿Qué hacemos este finde?</div>
+    <div class="info" id="descripcionActividad">Haz clic en el botón para descubrir un plan perfecto según tu mood.</div>
+    <div class="info" id="precio"></div>
+    <div class="info" id="tiempo"></div>
+    <div class="info" id="fiesta"></div>
+    <button onclick="generarActividad()">Generar plan 🔮</button>
+    <button style="background:#4CAF50; margin-left: 1rem;" onclick="abrirFormulario()">Añadir actividad ➕</button>
+  </div>
+
+  <div class="footer">✨ BCN OiSeSaleTRIUNFAU 😈 — Para no pensar, solo disfrutar (Sabeís que el ferru folla?) ✨</div>
+
+  <!-- Modal Form -->
+  <div id="formModal">
+    <div id="formContent">
+      <button id="closeForm" title="Cerrar">&times;</button>
+      <h2>Añadir nueva actividad</h2>
+      <form id="addActivityForm">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" required />
+
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" rows="3" required></textarea>
+
+        <label for="precioForm">Precio (€ por persona)</label>
+        <input type="number" id="precioForm" min="0" step="0.01" required />
+
+        <label for="tiempoForm">Duración (ej. 2 horas)</label>
+        <input type="text" id="tiempoForm" required />
+
+        <label for="climaForm">Clima</label>
+        <select id="climaForm" required>
+          <option value="calor">Calor</option>
+          <option value="frio">Frío</option>
+          <option value="cualquiera">Cualquiera</option>
+        </select>
+
+        <label for="presupuestoForm">Presupuesto</label>
+        <select id="presupuestoForm" required>
+          <option value="low">Bajo</option>
+          <option value="medium">Medio</option>
+          <option value="high">Alto</option>
+        </select>
+
+        <label for="estacionForm">Estación(es) (elige varias con Ctrl/Cmd)</label>
+        <select id="estacionForm" multiple size="4" required>
+          <option value="verano">Verano</option>
+          <option value="invierno">Invierno</option>
+          <option value="otoño">Otoño</option>
+          <option value="primavera">Primavera</option>
+        </select>
+
+        <div class="btnGroup">
+          <button type="submit" style="background:#4CAF50;">Añadir</button>
+          <button type="button" onclick="cerrarFormulario()" style="background:#ccc; color:#333;">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const actividades = [
+      {
+        nombre: "Bolos en Pedralbes",
+        descripcion: "Un clásico que nunca falla. Compite con tus amigos en una pista moderna con música y luces.",
+        precio: "15€/persona",
+        tiempo: "2 horas",
+        clima: "cualquiera",
+        presupuesto: "medium",
+        estaciones: ["verano", "invierno", "otoño", "primavera"]
+      },
+      {
+        nombre: "Cena hecha por vosotros + peli",
+        descripcion: "Id al super, preparad algo rico juntos y luego una peli random en casa. Buen plan, barato y con risas.",
+        precio: "8€/persona",
+        tiempo: "3-4 horas",
+        clima: "frio",
+        presupuesto: "low",
+        estaciones: ["invierno", "otoño"]
+      },
+      {
+        nombre: "Comprar camisetas de fútbol y regalarlas",
+        descripcion: "Cada uno compra una camiseta random barata y se la da a otro al azar. Luego vais todos vestidos así. Sorpresa garantizada.",
+        precio: "10€/persona",
+        tiempo: "2 horas",
+        clima: "calor",
+        presupuesto: "low",
+        estaciones: ["verano", "primavera"]
+      },
+      {
+        nombre: "Laser tag + burger",
+        descripcion: "Pegaos tiros con láser y luego comed como reyes. Ideal si tenéis energía.",
+        precio: "20€/persona",
+        tiempo: "3 horas",
+        clima: "cualquiera",
+        presupuesto: "medium",
+        estaciones: ["verano", "invierno", "otoño", "primavera"]
+      },
+      {
+        nombre: "Tardeo",
+        descripcion: "Empieza con cervezas, sigue con bailoteo. Perfecto para cuando hace buen tiempo.",
+        precio: "25€/persona",
+        tiempo: "4 horas",
+        clima: "calor",
+        presupuesto: "medium",
+        estaciones: ["verano", "primavera"]
+      },
+      {
+      nombre: "Bingo / Casino",
+      descripcion: "Una noche de juegos de azar y risas. Montad una pequeña zona de bingo o juegos de casino con premios simbólicos.",
+      precio: "10€/persona",
+      tiempo: "3 horas",
+      clima: "cualquiera",
+      presupuesto: "low",
+      estaciones: ["invierno", "otoño", "primavera", "verano"]
+    },
+    {
+      nombre: "Tarde de play",
+      descripcion: "Juegos cooperativos o competitivos en consola. Perfecto para desconectar y pasar un buen rato sin complicaciones.",
+      precio: "0€/persona",
+      tiempo: "3-5 horas",
+      clima: "cualquiera",
+      presupuesto: "low",
+      estaciones: ["invierno", "otoño", "primavera", "verano"]
+    },
+    {
+      nombre: "Crear una canción en grupo",
+      descripcion: "Id a una casa, poned instrumentos o apps para crear música y componed una canción juntos, sin ironías ni bromas. ¡Una experiencia creativa y única!",
+      precio: "0-15€/persona (según instrumentos o apps)",
+      tiempo: "4-5 horas",
+      clima: "cualquiera",
+      presupuesto: "low-medium",
+      estaciones: ["invierno", "otoño", "primavera", "verano"]
+    },
+    {
+      nombre: "Escape room casero",
+      descripcion: "Montad un escape room en casa con pistas y acertijos hechos por vosotros. Un reto divertido y cooperativo.",
+      precio: "5€/persona",
+      tiempo: "2-3 horas",
+      clima: "cualquiera",
+      presupuesto: "low",
+      estaciones: ["invierno", "otoño", "primavera", "verano"]
+    },
+    {
+      nombre: "Picnic en el parque",
+      descripcion: "Preparad comida sencilla y disfrutad de un picnic en algún parque bonito. Relajado y social.",
+      precio: "10€/persona",
+      tiempo: "3 horas",
+      clima: "calor",
+      presupuesto: "low",
+      estaciones: ["primavera", "verano", "otoño"]
+    },
+    {
+      nombre: "Ruta en bici",
+      descripcion: "Salid a dar una vuelta en bici por la ciudad o alrededores, con paradas para fotos o un café.",
+      precio: "0€/persona (suponiendo que tenéis bici)",
+      tiempo: "3 horas",
+      clima: "templado-calor",
+      presupuesto: "low",
+      estaciones: ["primavera", "verano", "otoño"]
+    },
+    {
+      nombre: "Taller de coctelería",
+      descripcion: "Aprended a preparar cócteles en casa. Comprad ingredientes y jugad a ser bartenders por una noche.",
+      precio: "15€/persona",
+      tiempo: "3 horas",
+      clima: "cualquiera",
+      presupuesto: "medium",
+      estaciones: ["invierno", "otoño", "primavera", "verano"]
+    }
+    ];
+
+    const fiestas = [
+      "Fiesta en Downtown 🍾",
+      "Malalts de Festa 🎉",
+      "Tardeo en Biblio ☀️",
+      "Open Air en Poble Espanyol 🎶",
+      "Fiesta temática en Shoko 🎭",
+      "Fiesta en Twenties Barcelona 🍾",
+      "Tardeo a elegir 🎉",
+      "Tardeo en Castefa ☀️",
+      "Marina 🎶",
+      "Marina + Wolf 🎭"
+    ];
+
+    function generarActividad() {
+      const presupuesto = document.getElementById("presupuesto").value;
+      const grupo = parseInt(document.getElementById("grupo").value);
+      const estacion = document.getElementById("estacion").value;
+      const clima = document.getElementById("clima").value;
+
+      const posibles = actividades.filter(a =>
+        (a.presupuesto === presupuesto || presupuesto === "medium") &&
+        (a.clima === clima || a.clima === "cualquiera") &&
+        a.estaciones.includes(estacion)
+      );
+
+      if (posibles.length === 0) {
+        document.getElementById("tituloActividad").innerText = "Sin plan disponible";
+        document.getElementById("descripcionActividad").innerText = "No hay actividades disponibles con esos filtros. ¡Añade la tuya!";
+        document.getElementById("precio").innerText = "";
+        document.getElementById("tiempo").innerText = "";
+        document.getElementById("fiesta").innerText = "";
+        return;
+      }
+
+      const actividad = posibles[Math.floor(Math.random() * posibles.length)];
+
+      document.getElementById("tituloActividad").innerText = actividad.nombre;
+      document.getElementById("descripcionActividad").innerText = actividad.descripcion;
+      document.getElementById("precio").innerText = `💸 Precio: ${actividad.precio}`;
+      document.getElementById("tiempo").innerText = `⏱️ Duración estimada: ${actividad.tiempo}`;
+      document.getElementById("fiesta").innerText = `🎈 Fiesta recomendada: ${fiestas[Math.floor(Math.random() * fiestas.length)]}`;
+    }
+
+    // Funciones para formulario modal
+    const formModal = document.getElementById("formModal");
+    const addActivityForm = document.getElementById("addActivityForm");
+    const closeFormBtn = document.getElementById("closeForm");
+
+    function abrirFormulario() {
+      formModal.style.display = "flex";
+    }
+
+    function cerrarFormulario() {
+      formModal.style.display = "none";
+      addActivityForm.reset();
+    }
+
+    closeFormBtn.onclick = cerrarFormulario;
+
+    // Cerrar modal si clic fuera del contenido
+    window.onclick = function(event) {
+      if (event.target == formModal) {
+        cerrarFormulario();
+      }
+    };
+
+    addActivityForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      // Leer valores
+      const nombre = document.getElementById("nombre").value.trim();
+      const descripcion = document.getElementById("descripcion").value.trim();
+      const precioNum = parseFloat(document.getElementById("precioForm").value);
+      const tiempo = document.getElementById("tiempoForm").value.trim();
+      const clima = document.getElementById("climaForm").value;
+      const presupuesto = document.getElementById("presupuestoForm").value;
+      const estacionesSelect = document.getElementById("estacionForm");
+      const estaciones = Array.from(estacionesSelect.selectedOptions).map(opt => opt.value);
+
+      if (!nombre || !descripcion || isNaN(precioNum) || !tiempo || estaciones.length === 0) {
+        alert("Por favor, rellena todos los campos correctamente.");
+        return;
+      }
+
+      // Crear nuevo objeto actividad
+      const nuevaActividad = {
+        nombre,
+        descripcion,
+        precio: `${precioNum.toFixed(2)}€/persona`,
+        tiempo,
+        clima,
+        presupuesto,
+        estaciones
+      };
+
+      actividades.push(nuevaActividad);
+      alert(`Actividad "${nombre}" añadida con éxito! Ahora puedes generar planes con ella.`);
+      cerrarFormulario();
+    });
+  </script>
+</body>
+</html>
